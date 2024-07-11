@@ -1,32 +1,16 @@
-- name: Verify if packages are installable (for installation) (Debian)
-  command: "dpkg -s {{ item }}"
-  ignore_errors: true
-  register: package_install_check_result
-  with_items: "{{ packages_to_install }}"
-  changed_when: false
-  when: packages_to_install|length > 0
-
 - name: Install packages (Debian)
   apt:
     name: "{{ item }}"
     state: present
   with_items: "{{ packages_to_install }}"
-  when: packages_to_install|length > 0 and "'not installed' in package_install_check_result.results[loop.index0].stderr"
-
-- name: Verify if packages are installed (for removal) (Debian)
-  command: "dpkg -s {{ item }}"
-  ignore_errors: true
-  register: package_remove_check_result
-  with_items: "{{ packages_to_remove }}"
-  changed_when: false
-  when: packages_to_remove|length > 0
+  when: packages_to_install|length > 0
 
 - name: Remove packages (Debian)
   apt:
     name: "{{ item }}"
     state: absent
   with_items: "{{ packages_to_remove }}"
-  when: packages_to_remove|length > 0 and "'not installed' not in package_remove_check_result.results[loop.index0].stderr"
+  when: packages_to_remove|length > 0
 
 - name: Update all packages if specified (Debian)
   apt:
