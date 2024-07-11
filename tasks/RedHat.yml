@@ -1,3 +1,8 @@
+- name: Install epel-release (RedHat)
+  yum:
+    name: epel-release
+    state: present
+    
 - name: Install packages (RedHat)
   yum:
     name: "{{ item }}"
