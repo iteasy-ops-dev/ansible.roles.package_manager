@@ -1,0 +1,5 @@
+---
+# defaults file for iteasy.ansible.roles.package_manager
+packages_to_install: []
+packages_to_remove: []
+perform_update: false

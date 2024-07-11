@@ -1,0 +1,36 @@
+- name: Verify if packages are installable (for installation)
+  command: "yum list installed {{ item }}"
+  ignore_errors: true
+  register: package_install_check_result
+  with_items: "{{ packages_to_install }}"
+  changed_when: false
+  when: packages_to_install|length > 0
+
+- name: Install packages
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ packages_to_install }}"
+  when: packages_to_install|length > 0 and "'No matching Packages to list' in package_install_check_result.results[loop.index0].stderr"
+
+- name: Verify if packages are installed (for removal)
+  command: "yum list installed {{ item }}"
+  ignore_errors: true
+  register: package_remove_check_result
+  with_items: "{{ packages_to_remove }}"
+  changed_when: false
+  when: packages_to_remove|length > 0
+
+- name: Remove packages
+  yum:
+    name: "{{ item }}"
+    state: absent
+  with_items: "{{ packages_to_remove }}"
+  when: packages_to_remove|length > 0 and "'No matching Packages to list' not in package_remove_check_result.results[loop.index0].stderr"
+
+- name: Update packages if specified
+  yum:
+    name: "*"
+    state: latest
+  when:
+  - perform_update == true
